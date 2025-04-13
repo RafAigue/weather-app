@@ -10,31 +10,99 @@ import {
   MapIcon,
 } from "react-native-heroicons/outline";
 import { CITIES, URL_BASE, URL_FIELDS } from "./constants";
+import * as Location from "expo-location";
+const MY_LOCATION = "My current location";
+import Warning from "./components/Warning";
+import CitySelector from "./components/CitySelector";
 
 export default function App() {
   const [showCities, setShowCities] = useState(false);
-  const [currLoc, setCurrLoc] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [locationEnabled, setLocationEnabled] = useState(false);
+  const [permissionGranted, setPermissionGranted] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [fetchingError, setFetchingError] = useState(false);
+  const [dataFetch, setFDataFetch] = useState(null);
 
-  const fetchData = async () => {
+  const fetchAPI = async () => {
+    console.log("fetchAPI");
     try {
       setFetching(true);
       const response = await fetch(
         URL_BASE +
-          `latitude=${currLoc.coordLat}&longitude=${currLoc.coordLong}` +
+          `latitude=${selectedLocation.coordLat}&longitude=${selectedLocation.coordLong}` +
           URL_FIELDS
       );
       const result = await response.json();
       console.log(result);
+      setFetchingError(false);
       setFetching(false);
+      setFDataFetch(result);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setFetchingError(true);
+      setFetching(false);
     }
   };
 
   useEffect(() => {
-    currLoc && fetchData();
-  }, [currLoc]);
+    selectedLocation && fetchAPI();
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    checkIfLocationEnabled();
+    checkIfPermissionGranted();
+  }, []);
+
+  const getLocation = async () => {
+    console.log("getLocation");
+    checkIfLocationEnabled() && getCurrentLocation();
+  };
+
+  const checkIfLocationEnabled = async () => {
+    console.log("checkIfLocationEnabled");
+    let enabled = await Location.hasServicesEnabledAsync();
+
+    setLocationEnabled(enabled);
+
+    !enabled && alert("Location not enabled. Please enable your location");
+
+    console.log("checkIfLocationEnabled -> ", enabled);
+    return enabled;
+  };
+
+  const checkIfPermissionGranted = async () => {
+    console.log("checkIfPermissionGranted");
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== "granted") {
+      setPermissionGranted(false);
+      alert("Permission denied. Please, allow the app to use the location");
+      console.log("checkIfPermissionGranted -> false");
+      return false;
+    }
+
+    setPermissionGranted(true);
+    console.log("checkIfPermissionGranted -> true");
+    return true;
+  };
+
+  const getCurrentLocation = async () => {
+    console.log("getCurrentLocation");
+
+    if (checkIfPermissionGranted()) {
+      setPermissionGranted(true);
+      const { coords } = await Location.getCurrentPositionAsync();
+
+      if (coords) {
+        setSelectedLocation({
+          name: MY_LOCATION,
+          coordLat: coords.latitude,
+          coordLong: coords.longitude,
+        });
+      } else alert("Unable to get coordenades!");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -55,7 +123,7 @@ export default function App() {
           }}
         >
           <Text style={styles.textInput}>
-            {currLoc ? currLoc.name : "Search city"}
+            {selectedLocation ? selectedLocation.name : "Search city"}
           </Text>
           <MagnifyingGlassIcon size={30} style={styles.glassIcon} />
         </Pressable>
@@ -64,15 +132,16 @@ export default function App() {
         <View
           style={{
             marginHorizontal: 20,
+            marginBottom: 10,
             borderRadius: 10,
             height: "165px",
             overflow: "auto",
           }}
         >
           <Pressable
-            style={styles.citySelector}
+            style={styles.currLocSelector}
             onPress={() => {
-              setCurrLoc("My location");
+              getLocation();
               setShowCities(false);
             }}
           >
@@ -82,19 +151,13 @@ export default function App() {
             </Text>
           </Pressable>
           {CITIES.map((city, index) => (
-            <Pressable
+            <CitySelector
               key={city.name + index}
-              style={styles.citySelector}
-              onPress={() => {
-                setCurrLoc(city);
-                setShowCities(false);
-              }}
-            >
-              <MapPinIcon size={15} style={{ color: "blue", marginRight: 2 }} />
-              <Text style={{ position: "relative", color: "black" }}>
-                {city.name}
-              </Text>
-            </Pressable>
+              city={city}
+              index={index}
+              setSelectedLocation={setSelectedLocation}
+              setShowCities={setShowCities}
+            />
           ))}
         </View>
       ) : null}
@@ -102,7 +165,17 @@ export default function App() {
         <View>
           <Text style={{ color: "white", fontSize: 30 }}>FETCHING!</Text>
         </View>
-      ) : null}
+      ) : (
+        <View>
+          {!locationEnabled && <Warning message="Location not enabled" />}
+          {!permissionGranted && <Warning message="Permission not granted" />}
+          <Text style={{ color: "white", fontSize: 30 }}>
+            City: {selectedLocation?.name}
+            Latitude: {selectedLocation?.coordLat}
+            Longitude: {selectedLocation?.coordLong}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -116,9 +189,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     height: "100%",
     width: "100%",
-  },
-  text: {
-    color: "white",
   },
   search: {
     position: "relative",
@@ -147,13 +217,13 @@ const styles = StyleSheet.create({
     padding: 5,
     color: "white",
   },
-  citySelector: {
+  currLocSelector: {
     display: "flex",
     flexDirection: "row",
     marginBottom: 1,
     paddingVertical: 8,
     paddingLeft: 10,
-    backgroundColor: "#f3feffe6",
+    backgroundColor: "#d0fbffe6",
     color: "#000",
     gap: 5,
   },

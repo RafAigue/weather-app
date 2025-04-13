@@ -3,17 +3,18 @@ import { StatusBar } from "expo-status-bar";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import bg from "./assets/bg.webp";
+import loading from "./assets/loading.svg";
 import {
   MagnifyingGlassIcon,
-  MapPinIcon,
   GlobeEuropeAfricaIcon,
   MapIcon,
 } from "react-native-heroicons/outline";
-import { CITIES, URL_BASE, URL_FIELDS } from "./constants";
+import { CITIES, URL_BASE, URL_FIELDS, WEATHER_CODES } from "./constants";
 import * as Location from "expo-location";
 const MY_LOCATION = "My current location";
 import Warning from "./components/Warning";
 import CitySelector from "./components/CitySelector";
+import Weather from "./components/Weather";
 
 export default function App() {
   const [showCities, setShowCities] = useState(false);
@@ -28,16 +29,17 @@ export default function App() {
     console.log("fetchAPI");
     try {
       setFetching(true);
+
       const response = await fetch(
         URL_BASE +
           `latitude=${selectedLocation.coordLat}&longitude=${selectedLocation.coordLong}` +
           URL_FIELDS
       );
       const result = await response.json();
-      console.log(result);
+
       setFetchingError(false);
       setFetching(false);
-      setFDataFetch(result);
+      setFDataFetch(result.current);
     } catch (error) {
       console.error("Error fetching data:", error);
       setFetchingError(true);
@@ -107,11 +109,11 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <Image source={bg} style={styles.bg} />
+      <Image source={bg} blurRadius={10} style={styles.bg} />
       <View style={styles.search}>
         <GlobeEuropeAfricaIcon
-          size={40}
-          style={{ color: "#69bfff", marginRight: 5 }}
+          size={30}
+          style={{ color: "#69bfff", marginHorizontal: 5 }}
         />
         <Pressable
           onPress={() => setShowCities(!showCities)}
@@ -125,7 +127,7 @@ export default function App() {
           <Text style={styles.textInput}>
             {selectedLocation ? selectedLocation.name : "Search city"}
           </Text>
-          <MagnifyingGlassIcon size={30} style={styles.glassIcon} />
+          <MagnifyingGlassIcon size={20} style={styles.glassIcon} />
         </Pressable>
       </View>
       {showCities ? (
@@ -162,18 +164,28 @@ export default function App() {
         </View>
       ) : null}
       {fetching ? (
-        <View>
-          <Text style={{ color: "white", fontSize: 30 }}>FETCHING!</Text>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Image source={loading} style={{ width: 200, height: 200 }} />
         </View>
       ) : (
-        <View>
+        <View style={{ flex: 1, marginTop: 10 }}>
           {!locationEnabled && <Warning message="Location not enabled" />}
           {!permissionGranted && <Warning message="Permission not granted" />}
-          <Text style={{ color: "white", fontSize: 30 }}>
-            City: {selectedLocation?.name}
-            Latitude: {selectedLocation?.coordLat}
-            Longitude: {selectedLocation?.coordLong}
-          </Text>
+          {fetchingError && <Warning message="Fetching error" />}
+          {dataFetch ? (
+            <Weather
+              place={selectedLocation.name}
+              weatherCode={dataFetch.weather_code}
+              precipitation={dataFetch.precipitation}
+              temperature={dataFetch.temperature_2m}
+            />
+          ) : (
+            <Text style={{ color: "white", fontSize: 30, marginTop: 10 }}>
+              No DATA
+            </Text>
+          )}
         </View>
       )}
     </View>
@@ -205,7 +217,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     width: "100%",
-    padding: 10,
+    padding: 5,
     fontSize: 16,
     color: "white",
   },

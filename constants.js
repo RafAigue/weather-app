@@ -56,7 +56,7 @@ export const CITIES = [
   },
 ];
 
-export const weatherCodes = {
+export const WEATHER_CODES = {
   0: "Clear sky",
   1: "Mainly clear",
   2: "Partly cloudy",
@@ -86,6 +86,16 @@ export const weatherCodes = {
   96: "Thunderstorm",
   99: "Thunderstorm with hail",
 };
+
+export const SUN_CODES = [0];
+export const CLOUDY_CODES = [1, 2];
+export const OVERCAST_CODES = [3];
+export const FOG_CODES = [45, 48];
+export const DRIZZLE_CODES = [51, 53, 56, 57];
+export const RAIN_CODES = [61, 63, 65, 66, 67, 80, 81, 82, 85, 86];
+export const SNOW_CODES = [71, 73, 75, 77];
+export const THUNDERSTORM_CODES = [95, 96];
+export const THUNDERSTORM_HAIL_CODES = [99];
 
 export const URL_BASE = "https://api.open-meteo.com/v1/forecast?";
 export const URL_FIELDS = "&current=temperature_2m,weather_code,precipitation";

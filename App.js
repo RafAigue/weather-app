@@ -98,7 +98,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <Image source={bg} blurRadius={5} style={styles.bg} />
+      <Image source={bg} blurRadius={10} style={styles.bg} />
       <View style={styles.search}>
         <GlobeEuropeAfricaIcon
           size={30}

@@ -3,9 +3,11 @@ import { ExclamationTriangleIcon } from "react-native-heroicons/outline";
 
 export default function Warning({ message }) {
   return (
-    <View style={styles.view}>
-      <ExclamationTriangleIcon size={25} color="black" />
-      <Text style={styles.message}>{message}</Text>
+    <View style={{ marginTop: 10 }}>
+      <View style={styles.view}>
+        <ExclamationTriangleIcon size={25} color="black" />
+        <Text style={styles.message}>{message}</Text>
+      </View>
     </View>
   );
 }

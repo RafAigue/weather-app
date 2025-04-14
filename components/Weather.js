@@ -28,7 +28,7 @@ export default function Weather({
   precipitation,
   temperature,
 }) {
-  const getImageFromCode = (code) => {
+  const getImageFromCode = () => {
     if (SUN_CODES.includes(weatherCode)) {
       return <Image source={SUN} style={styles.image} />;
     } else if (CLOUDY_CODES.includes(weatherCode)) {
@@ -54,25 +54,8 @@ export default function Weather({
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            width: "300px",
-            marginTop: 10,
-            justifyContent: "space-around",
-            alignItems: "baseline",
-          }}
-        >
-          <Text
-            style={{
-              color: "white",
-              fontSize: 32,
-              fontWeight: "bold",
-            }}
-          >
-            {place}
-          </Text>
+        <View style={styles.cityTemp}>
+          <Text style={styles.city}>{place}</Text>
           <Text
             style={{
               color: "white",
@@ -83,25 +66,8 @@ export default function Weather({
           </Text>
         </View>
         {getImageFromCode()}
-        <Text
-          style={{
-            color: "white",
-            marginTop: 5,
-            fontSize: 14,
-            fontWeight: "200",
-          }}
-        >
-          {WEATHER_CODES[weatherCode]}
-        </Text>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: 10,
-            marginTop: 10,
-            alignItems: "baseline",
-          }}
-        >
+        <Text style={styles.conditions}>{WEATHER_CODES[weatherCode]}</Text>
+        <View style={styles.precipitation}>
           <Image source={precipSVG} style={{ width: 20, height: 20 }} />
           <Text style={{ color: "white", fontSize: 18 }}>
             {precipitation}mm
@@ -117,6 +83,25 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
+  cityTemp: {
+    display: "flex",
+    flexDirection: "row",
+    width: "300px",
+    marginTop: 10,
+    justifyContent: "space-around",
+    alignItems: "baseline",
+  },
+  city: {
+    color: "white",
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  conditions: {
+    color: "white",
+    marginTop: 5,
+    fontSize: 14,
+    fontWeight: "200",
+  },
   container: {
     width: "100%",
     display: "flex",
@@ -129,5 +114,12 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginVertical: 20,
+  },
+  precipitation: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 10,
+    alignItems: "baseline",
   },
 });

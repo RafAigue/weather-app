@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import * as Location from "expo-location";
 
-import bg from "./assets/bg.webp";
-import loading from "./assets/loading.svg";
+import bg from "./assets/bg.jpg";
+import loading from "./assets/svgs/loading.svg";
 import {
   MagnifyingGlassIcon,
   GlobeEuropeAfricaIcon,
   MapIcon,
 } from "react-native-heroicons/outline";
-import { CITIES, URL_BASE, URL_FIELDS, WEATHER_CODES } from "./constants";
-import * as Location from "expo-location";
-const MY_LOCATION = "My current location";
+import { CITIES, URL_BASE, URL_FIELDS } from "./constants";
+
 import Warning from "./components/Warning";
 import CitySelector from "./components/CitySelector";
 import Weather from "./components/Weather";
@@ -26,7 +26,6 @@ export default function App() {
   const [dataFetch, setFDataFetch] = useState(null);
 
   const fetchAPI = async () => {
-    console.log("fetchAPI");
     try {
       setFetching(true);
 
@@ -62,43 +61,33 @@ export default function App() {
   };
 
   const checkIfLocationEnabled = async () => {
-    console.log("checkIfLocationEnabled");
     let enabled = await Location.hasServicesEnabledAsync();
-
     setLocationEnabled(enabled);
-
     !enabled && alert("Location not enabled. Please enable your location");
-
-    console.log("checkIfLocationEnabled -> ", enabled);
     return enabled;
   };
 
   const checkIfPermissionGranted = async () => {
-    console.log("checkIfPermissionGranted");
     let { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
       setPermissionGranted(false);
       alert("Permission denied. Please, allow the app to use the location");
-      console.log("checkIfPermissionGranted -> false");
       return false;
     }
 
     setPermissionGranted(true);
-    console.log("checkIfPermissionGranted -> true");
     return true;
   };
 
   const getCurrentLocation = async () => {
-    console.log("getCurrentLocation");
-
     if (checkIfPermissionGranted()) {
       setPermissionGranted(true);
       const { coords } = await Location.getCurrentPositionAsync();
 
       if (coords) {
         setSelectedLocation({
-          name: MY_LOCATION,
+          name: "My current location",
           coordLat: coords.latitude,
           coordLong: coords.longitude,
         });
@@ -109,7 +98,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <Image source={bg} blurRadius={10} style={styles.bg} />
+      <Image source={bg} blurRadius={5} style={styles.bg} />
       <View style={styles.search}>
         <GlobeEuropeAfricaIcon
           size={30}
@@ -167,10 +156,10 @@ export default function App() {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
-          <Image source={loading} style={{ width: 200, height: 200 }} />
+          <Image source={loading} style={{ width: 100, height: 100 }} />
         </View>
       ) : (
-        <View style={{ flex: 1, marginTop: 10 }}>
+        <View style={{ marginTop: 10 }}>
           {!locationEnabled && <Warning message="Location not enabled" />}
           {!permissionGranted && <Warning message="Permission not granted" />}
           {fetchingError && <Warning message="Fetching error" />}
@@ -182,9 +171,7 @@ export default function App() {
               temperature={dataFetch.temperature_2m}
             />
           ) : (
-            <Text style={{ color: "white", fontSize: 30, marginTop: 10 }}>
-              No DATA
-            </Text>
+            <Warning message="No data available" />
           )}
         </View>
       )}

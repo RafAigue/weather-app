@@ -19,7 +19,8 @@
     "react-native-heroicons": "^4.0.0",
     "react-native-svg": "^15.11.2",
     "react-native-web": "~0.19.13",
-    "expo-location": "~18.0.10"
+    "expo-location": "~18.0.10",
+    "expo-network": "~7.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

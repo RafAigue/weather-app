@@ -8,6 +8,7 @@ import SNOW from "../assets/weather pngs/snow.png";
 import SUN from "../assets/weather pngs/sun.png";
 import THUNDERSTORM_HAIL from "../assets/weather pngs/thunderstorm_hail.png";
 import THUNDERSTORM from "../assets/weather pngs/thunderstorm.png";
+import precipSVG from "../assets/svgs/rain.svg";
 import {
   WEATHER_CODES,
   SUN_CODES,
@@ -53,20 +54,59 @@ export default function Weather({
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
-        <Text
+        <View
           style={{
+            display: "flex",
+            flexDirection: "row",
+            width: "300px",
             marginTop: 10,
-            color: "white",
-            fontSize: 32,
-            fontWeight: "bold",
+            justifyContent: "space-around",
+            alignItems: "baseline",
           }}
         >
-          {place}
-        </Text>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 32,
+              fontWeight: "bold",
+            }}
+          >
+            {place}
+          </Text>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 22,
+            }}
+          >
+            {temperature}ºC
+          </Text>
+        </View>
         {getImageFromCode()}
-        <Text style={{ color: "white", marginTop: 5, fontSize: 20 }}>
+        <Text
+          style={{
+            color: "white",
+            marginTop: 5,
+            fontSize: 14,
+            fontWeight: "200",
+          }}
+        >
           {WEATHER_CODES[weatherCode]}
         </Text>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 10,
+            marginTop: 10,
+            alignItems: "baseline",
+          }}
+        >
+          <Image source={precipSVG} style={{ width: 20, height: 20 }} />
+          <Text style={{ color: "white", fontSize: 18 }}>
+            {precipitation}mm
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -88,6 +128,6 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
-    marginTop: 20,
+    marginVertical: 20,
   },
 });

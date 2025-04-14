@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Image, StyleSheet, View } from "react-native";
 import * as Location from "expo-location";
@@ -60,7 +60,6 @@ export default function App() {
   }, []);
 
   const getLocation = async () => {
-    console.log("getLocation");
     checkIfLocationEnabled() && getCurrentLocation();
   };
 
@@ -107,7 +106,7 @@ export default function App() {
     setIsAirplaneModeEnabled(await Network.isAirplaneModeEnabledAsync());
   };
 
-  const checkWarnings = () => {
+  const checkWarnings = useMemo(() => {
     let warnings = [];
 
     !locationEnabled && // Don't know why is not working properly
@@ -146,7 +145,24 @@ export default function App() {
       );
 
     return warnings;
-  };
+  }, [
+    locationEnabled,
+    permissionGranted,
+    fetchingError,
+    networkStatus,
+    isAirplaneModeEnabled,
+  ]);
+
+  const weatherComponent = useMemo(() => {
+    return (
+      <Weather
+        place={selectedLocation?.name}
+        weatherCode={dataFetch?.weather_code}
+        precipitation={dataFetch?.precipitation}
+        temperature={dataFetch?.temperature_2m}
+      />
+    );
+  }, [selectedLocation, dataFetch]);
 
   return (
     <View style={styles.container}>
@@ -170,14 +186,9 @@ export default function App() {
         </View>
       ) : (
         <View style={{ marginTop: 10 }}>
-          {checkWarnings()}
+          {checkWarnings}
           {dataFetch ? (
-            <Weather
-              place={selectedLocation.name}
-              weatherCode={dataFetch.weather_code}
-              precipitation={dataFetch.precipitation}
-              temperature={dataFetch.temperature_2m}
-            />
+            weatherComponent
           ) : (
             <Warning message="No data available" />
           )}

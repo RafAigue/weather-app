@@ -1,7 +1,7 @@
 import { Text, Pressable, StyleSheet } from "react-native";
 import { MapPinIcon } from "react-native-heroicons/outline";
 
-export default function CitySelector({
+export default function CitySelectorOption({
   city,
   setSelectedLocation,
   setShowCities,

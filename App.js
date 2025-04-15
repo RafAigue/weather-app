@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Image, StyleSheet, View } from "react-native";
-import * as Location from "expo-location";
-import * as Network from "expo-network";
 
 import bg from "./assets/bg.jpg";
 import loading from "./assets/svgs/loading.svg";
@@ -13,6 +11,13 @@ import Warning from "./components/Warning";
 import CitySelector from "./components/CitySelector";
 import Weather from "./components/Weather";
 import Searcher from "./components/Searcher";
+
+import {
+  checkIfLocationEnabled,
+  getCurrentLocation,
+  checkNetworkStatus,
+  checkAirplaneMode,
+} from "./utils/utils";
 
 export default function App() {
   const [showCities, setShowCities] = useState(false);
@@ -25,13 +30,14 @@ export default function App() {
   const [networkStatus, setNetworkStatus] = useState(null);
   const [isAirplaneModeEnabled, setIsAirplaneModeEnabled] = useState(false);
 
+  // This function could be implemented in a apiHooks.js file
   const fetchAPI = async () => {
     try {
       setFetching(true);
 
       const response = await fetch(
         URL_BASE +
-          `latitude=${selectedLocation.coordLat}&longitude=${selectedLocation.coordLong}` +
+          `latitude=${selectedLocation.latitude}&longitude=${selectedLocation.longitude}` +
           URL_FIELDS
       );
       const result = await response.json();
@@ -53,57 +59,15 @@ export default function App() {
   }, [selectedLocation]);
 
   useEffect(() => {
-    checkIfLocationEnabled();
-    checkIfPermissionGranted();
-    checkNetworkStatus();
-    checkAirplaneMode();
+    getLocation(); // By default
+    checkNetworkStatus().then((status) => setNetworkStatus(status));
+    checkAirplaneMode().then((enabled) => setIsAirplaneModeEnabled(enabled));
   }, []);
 
   const getLocation = async () => {
-    checkIfLocationEnabled() && getCurrentLocation();
-  };
-
-  const checkIfLocationEnabled = async () => {
-    let enabled = await Location.hasServicesEnabledAsync();
+    const enabled = await checkIfLocationEnabled();
     setLocationEnabled(enabled);
-    !enabled && alert("Location not enabled. Please enable your location");
-    return enabled;
-  };
-
-  const checkIfPermissionGranted = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-
-    if (status !== "granted") {
-      setPermissionGranted(false);
-      alert("Permission denied. Please, allow the app to use the location");
-      return false;
-    }
-
-    setPermissionGranted(true);
-    return true;
-  };
-
-  const getCurrentLocation = async () => {
-    if (checkIfPermissionGranted()) {
-      setPermissionGranted(true);
-      const { coords } = await Location.getCurrentPositionAsync();
-
-      if (coords) {
-        setSelectedLocation({
-          name: "My current location",
-          coordLat: coords.latitude,
-          coordLong: coords.longitude,
-        });
-      } else alert("Unable to get coordenades!");
-    }
-  };
-
-  const checkNetworkStatus = async () => {
-    setNetworkStatus(await Network.getNetworkStateAsync());
-  };
-
-  const checkAirplaneMode = async () => {
-    setIsAirplaneModeEnabled(await Network.isAirplaneModeEnabledAsync());
+    enabled && getCurrentLocation(setPermissionGranted, setSelectedLocation);
   };
 
   const checkWarnings = useMemo(() => {

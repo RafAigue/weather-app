@@ -4,7 +4,7 @@ import { CITIES } from "../constants";
 import CitySelectorOption from "./CitySelectorOption";
 
 export default function CitySelector({
-  setSelectedLocation,
+  updateLocationState,
   setShowCities,
   getLocation,
 }) {
@@ -27,7 +27,7 @@ export default function CitySelector({
           key={city.name + index}
           city={city}
           index={index}
-          setSelectedLocation={setSelectedLocation}
+          updateLocationState={updateLocationState}
           setShowCities={setShowCities}
         />
       ))}

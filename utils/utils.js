@@ -19,22 +19,22 @@ export const checkIfLocationEnabled = async () => {
   return enabled;
 };
 
-export const getCurrentLocation = async (
-  setPermissionGranted,
-  setSelectedLocation
-) => {
-  if (checkIfPermissionGranted()) {
-    setPermissionGranted(true);
+export const getCurrentLocation = async (updateLocationState) => {
+  const permission = await checkIfPermissionGranted();
+  if (permission) {
     const { coords } = await Location.getCurrentPositionAsync();
 
     if (coords) {
-      setSelectedLocation({
-        name: "My current location",
-        latitude: coords.latitude,
-        longitude: coords.longitude,
+      updateLocationState({
+        selected: {
+          name: "My current location",
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        },
       });
     } else alert("Unable to get coordenades!");
-  } else setPermissionGranted(false);
+  }
+  updateLocationState({ permissionGranted: permission });
 };
 
 export const checkNetworkStatus = async () => {

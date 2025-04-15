@@ -5,12 +5,12 @@ import { Image, StyleSheet, View } from "react-native";
 import bg from "./assets/bg.jpg";
 import loading from "./assets/svgs/loading.svg";
 
-import { URL_BASE, URL_FIELDS } from "./constants";
-
 import Warning from "./components/Warning";
 import CitySelector from "./components/CitySelector";
 import Weather from "./components/Weather";
 import Searcher from "./components/Searcher";
+
+import { getWeather } from "./services/weather";
 
 import {
   checkIfLocationEnabled,
@@ -21,86 +21,109 @@ import {
 
 export default function App() {
   const [showCities, setShowCities] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [locationEnabled, setLocationEnabled] = useState(false);
-  const [permissionGranted, setPermissionGranted] = useState(false);
-  const [fetching, setFetching] = useState(false);
-  const [fetchingError, setFetchingError] = useState(false);
-  const [dataFetch, setFDataFetch] = useState(null);
-  const [networkStatus, setNetworkStatus] = useState(null);
-  const [isAirplaneModeEnabled, setIsAirplaneModeEnabled] = useState(false);
+  const [locationState, setLocationState] = useState({
+    selected: null,
+    enabled: false,
+    permissionGranted: false,
+  });
+  const [apiState, setApiState] = useState({
+    loading: false,
+    error: false,
+    data: null,
+  });
+  const [connectivityState, setConnectivityState] = useState({
+    network: null,
+    airplaneMode: false,
+  });
 
-  // This function could be implemented in a apiHooks.js file
-  const fetchAPI = async () => {
-    try {
-      setFetching(true);
+  const updateLocationState = (updates) => {
+    setLocationState((prev) => ({ ...prev, ...updates }));
+  };
 
-      const response = await fetch(
-        URL_BASE +
-          `latitude=${selectedLocation.latitude}&longitude=${selectedLocation.longitude}` +
-          URL_FIELDS
-      );
-      const result = await response.json();
+  const updateApiState = (updates) => {
+    setApiState((prev) => ({ ...prev, ...updates }));
+  };
 
-      setFetchingError(false);
-      setFetching(false);
-      setFDataFetch(result.current);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setFetchingError(true);
-      setFetching(false);
-    }
+  const updateConnectivityState = (updates) => {
+    setConnectivityState((prev) => ({ ...prev, ...updates }));
   };
 
   useEffect(() => {
-    checkNetworkStatus();
-    checkAirplaneMode();
-    selectedLocation && fetchAPI();
-  }, [selectedLocation]);
+    checkNetworkStatus().then((status) =>
+      updateConnectivityState({ network: status })
+    );
+    checkAirplaneMode().then((enabled) =>
+      updateConnectivityState({ airplaneMode: enabled })
+    );
+    if (locationState.selected) {
+      updateApiState({ loading: true });
+      getWeather(
+        locationState.selected.latitude,
+        locationState.selected.longitude
+      )
+        .then((weather) => {
+          setApiState({
+            error: false,
+            loading: false,
+            data: weather,
+          });
+        })
+        .catch(() => {
+          updateApiState({
+            error: true,
+            loading: false,
+          });
+        });
+    }
+  }, [locationState.selected]);
 
   useEffect(() => {
     getLocation(); // By default
-    checkNetworkStatus().then((status) => setNetworkStatus(status));
-    checkAirplaneMode().then((enabled) => setIsAirplaneModeEnabled(enabled));
+    checkNetworkStatus().then((status) =>
+      updateConnectivityState({ network: status })
+    );
+    checkAirplaneMode().then((enabled) =>
+      updateConnectivityState({ airplaneMode: enabled })
+    );
   }, []);
 
   const getLocation = async () => {
     const enabled = await checkIfLocationEnabled();
-    setLocationEnabled(enabled);
-    enabled && getCurrentLocation(setPermissionGranted, setSelectedLocation);
+    updateLocationState({ enabled });
+    enabled && getCurrentLocation(updateLocationState);
   };
 
   const checkWarnings = useMemo(() => {
     let warnings = [];
 
-    !locationEnabled && // Don't know why is not working properly
+    !locationState.enabled &&
       warnings.push(
         <Warning key="locationEnabled" message="Location not enabled" />
       );
-    !permissionGranted &&
+    !locationState.permissionGranted &&
       warnings.push(
         <Warning
           key="permissionGranted"
           message="Location permission not granted"
         />
       );
-    fetchingError &&
+    apiState.error &&
       warnings.push(<Warning key="fetchingError" message="Fetching error" />);
-    !networkStatus?.isConnected &&
+    !connectivityState.network?.isConnected &&
       warnings.push(
         <Warning
           key="networkStatusIsConnected"
           message="No internet connection"
         />
       );
-    !networkStatus?.isInternetReachable &&
+    !connectivityState.network?.isInternetReachable &&
       warnings.push(
         <Warning
           key="networkStatusIsInternetReachable"
           message="Internet not reachable"
         />
       );
-    isAirplaneModeEnabled && // Don't know why is not working properly
+    connectivityState.airplaneMode &&
       warnings.push(
         <Warning
           key="isAirplaneModeEnabled"
@@ -109,49 +132,43 @@ export default function App() {
       );
 
     return warnings;
-  }, [
-    locationEnabled,
-    permissionGranted,
-    fetchingError,
-    networkStatus,
-    isAirplaneModeEnabled,
-  ]);
+  }, [locationState, apiState, connectivityState]);
 
   const weatherComponent = useMemo(() => {
     return (
       <Weather
-        place={selectedLocation?.name}
-        weatherCode={dataFetch?.weather_code}
-        precipitation={dataFetch?.precipitation}
-        temperature={dataFetch?.temperature_2m}
+        place={locationState.selected?.name}
+        weatherCode={apiState.data?.weather_code}
+        precipitation={apiState.data?.precipitation}
+        temperature={apiState.data?.temperature_2m}
       />
     );
-  }, [selectedLocation, dataFetch]);
+  }, [locationState.selected, apiState.data]);
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
       <Image source={bg} blurRadius={10} style={styles.bg} />
       <Searcher
-        selectedLocation={selectedLocation}
+        selectedLocation={locationState.selected}
         setShowCities={setShowCities}
         showCities={showCities}
       />
       {showCities ? (
         <CitySelector
-          setSelectedLocation={setSelectedLocation}
+          updateLocationState={updateLocationState}
           setShowCities={setShowCities}
           getLocation={getLocation}
         />
       ) : null}
-      {fetching ? (
+      {apiState.loading ? (
         <View style={styles.loading}>
           <Image source={loading} style={{ width: 100, height: 100 }} />
         </View>
       ) : (
         <View style={{ marginTop: 10 }}>
           {checkWarnings}
-          {dataFetch ? (
+          {apiState.data ? (
             weatherComponent
           ) : (
             <Warning message="No data available" />

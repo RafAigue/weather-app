@@ -3,14 +3,14 @@ import { MapPinIcon } from "react-native-heroicons/outline";
 
 export default function CitySelectorOption({
   city,
-  setSelectedLocation,
+  updateLocationState,
   setShowCities,
 }) {
   return (
     <Pressable
       style={styles.citySelector}
       onPress={() => {
-        setSelectedLocation(city);
+        updateLocationState({ selected: city });
         setShowCities(false);
       }}
     >

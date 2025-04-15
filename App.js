@@ -31,8 +31,8 @@ export default function App() {
   const [isAirplaneModeEnabled, setIsAirplaneModeEnabled] = useState(false);
 
   useEffect(() => {
-    checkNetworkStatus();
-    checkAirplaneMode();
+    checkNetworkStatus().then((status) => setNetworkStatus(status));
+    checkAirplaneMode().then((enabled) => setIsAirplaneModeEnabled(enabled));
     if (selectedLocation) {
       setFetching(true);
       getWeather(selectedLocation.latitude, selectedLocation.longitude)

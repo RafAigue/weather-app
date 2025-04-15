@@ -56,7 +56,7 @@ export default function App() {
     checkAirplaneMode().then((enabled) =>
       updateConnectivityState({ airplaneMode: enabled })
     );
-    if (locationState.selected) {
+    if (locationState.selected && connectivityState.network) {
       updateApiState({ loading: true });
       getWeather(
         locationState.selected.latitude,

@@ -6,7 +6,7 @@ export const checkIfPermissionGranted = async () => {
   let { status } = await Location.requestForegroundPermissionsAsync();
 
   if (status !== "granted") {
-    alert("Permission denied. Please, allow the app to use the location");
+    console.log("Permission denied. Please, allow the app to use the location");
     return false;
   }
 
@@ -15,7 +15,7 @@ export const checkIfPermissionGranted = async () => {
 
 export const checkIfLocationEnabled = async () => {
   let enabled = await Location.hasServicesEnabledAsync();
-  !enabled && alert("Location not enabled. Please enable your location");
+  !enabled && console.log("Location not enabled. Please enable your location");
   return enabled;
 };
 

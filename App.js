@@ -5,12 +5,12 @@ import { Image, StyleSheet, View } from "react-native";
 import bg from "./assets/bg.jpg";
 import loading from "./assets/svgs/loading.svg";
 
-import { URL_BASE, URL_FIELDS } from "./constants";
-
 import Warning from "./components/Warning";
 import CitySelector from "./components/CitySelector";
 import Weather from "./components/Weather";
 import Searcher from "./components/Searcher";
+
+import { getWeather } from "./services/weather";
 
 import {
   checkIfLocationEnabled,
@@ -30,32 +30,22 @@ export default function App() {
   const [networkStatus, setNetworkStatus] = useState(null);
   const [isAirplaneModeEnabled, setIsAirplaneModeEnabled] = useState(false);
 
-  // This function could be implemented in a apiHooks.js file
-  const fetchAPI = async () => {
-    try {
-      setFetching(true);
-
-      const response = await fetch(
-        URL_BASE +
-          `latitude=${selectedLocation.latitude}&longitude=${selectedLocation.longitude}` +
-          URL_FIELDS
-      );
-      const result = await response.json();
-
-      setFetchingError(false);
-      setFetching(false);
-      setFDataFetch(result.current);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setFetchingError(true);
-      setFetching(false);
-    }
-  };
-
   useEffect(() => {
     checkNetworkStatus();
     checkAirplaneMode();
-    selectedLocation && fetchAPI();
+    if (selectedLocation) {
+      setFetching(true);
+      getWeather(selectedLocation.latitude, selectedLocation.longitude)
+        .then((weather) => {
+          setFetchingError(false);
+          setFetching(false);
+          setFDataFetch(weather);
+        })
+        .catch(() => {
+          setFetchingError(true);
+          setFetching(false);
+        });
+    }
   }, [selectedLocation]);
 
   useEffect(() => {

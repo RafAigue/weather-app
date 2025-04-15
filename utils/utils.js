@@ -27,7 +27,7 @@ export const getCurrentLocation = async (updateLocationState) => {
     if (coords) {
       updateLocationState({
         selected: {
-          name: "My current location",
+          name: "My location",
           latitude: coords.latitude,
           longitude: coords.longitude,
         },

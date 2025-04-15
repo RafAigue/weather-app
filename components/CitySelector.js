@@ -19,7 +19,7 @@ export default function CitySelector({
       >
         <MapIcon size={15} style={{ color: "blue", marginRight: 2 }} />
         <Text style={{ position: "relative", color: "black" }}>
-          My current location
+          My location
         </Text>
       </Pressable>
       {CITIES.map((city, index) => (

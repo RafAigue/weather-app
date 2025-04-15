@@ -21,6 +21,7 @@ import {
   THUNDERSTORM_CODES,
   THUNDERSTORM_HAIL_CODES,
 } from "../constants";
+import { QuestionMarkCircleIcon } from "react-native-heroicons/outline";
 
 export default function Weather({
   place,
@@ -48,13 +49,16 @@ export default function Weather({
     } else if (THUNDERSTORM_CODES.includes(weatherCode)) {
       return <Image source={THUNDERSTORM} style={styles.image} />;
     }
-    return null;
+  };
+
+  const isWeatherCodeValid = () => {
+    return WEATHER_CODES[weatherCode];
   };
 
   return (
     <ScrollView style={styles.scrollView}>
       <View style={styles.container}>
-        <View style={styles.cityTemp}>
+        <View style={styles.cityInfo}>
           <Text style={styles.city}>{place}</Text>
           <Text
             style={{
@@ -65,13 +69,26 @@ export default function Weather({
             {temperature}ºC
           </Text>
         </View>
-        {getImageFromCode()}
-        <Text style={styles.conditions}>{WEATHER_CODES[weatherCode]}</Text>
-        <View style={styles.precipitation}>
-          <Image source={precipSVG} style={{ width: 20, height: 20 }} />
-          <Text style={{ color: "white", fontSize: 18 }}>
-            {precipitation}mm
-          </Text>
+        <View style={{ alignItems: "center" }}>
+          {isWeatherCodeValid() ? (
+            <>
+              {getImageFromCode()}
+              <Text style={styles.conditions}>
+                {WEATHER_CODES[weatherCode]}
+              </Text>
+              <View style={styles.precipitation}>
+                <Image source={precipSVG} style={{ width: 20, height: 20 }} />
+                <Text style={{ color: "white", fontSize: 18 }}>
+                  {precipitation}mm
+                </Text>
+              </View>
+            </>
+          ) : (
+            <>
+              <QuestionMarkCircleIcon size={200} color="white" />
+              <Text style={styles.conditions}>Unknown weather code</Text>
+            </>
+          )}
         </View>
       </View>
     </ScrollView>
@@ -83,10 +100,10 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
-  cityTemp: {
+  cityInfo: {
     display: "flex",
     flexDirection: "row",
-    width: "300px",
+    width: "350px",
     marginTop: 10,
     justifyContent: "space-around",
     alignItems: "baseline",

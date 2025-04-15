@@ -5,6 +5,7 @@ import { Image, StyleSheet, View } from "react-native";
 import bg from "./assets/bg.jpg";
 import loading from "./assets/svgs/loading.svg";
 
+import Warnings from "./components/Warnings";
 import Warning from "./components/Warning";
 import CitySelector from "./components/CitySelector";
 import Weather from "./components/Weather";
@@ -93,58 +94,6 @@ export default function App() {
     enabled && getCurrentLocation(updateLocationState);
   };
 
-  const checkWarnings = useMemo(() => {
-    let warnings = [];
-
-    !locationState.enabled &&
-      warnings.push(
-        <Warning key="locationEnabled" message="Location not enabled" />
-      );
-    !locationState.permissionGranted &&
-      warnings.push(
-        <Warning
-          key="permissionGranted"
-          message="Location permission not granted"
-        />
-      );
-    apiState.error &&
-      warnings.push(<Warning key="fetchingError" message="Fetching error" />);
-    !connectivityState.network?.isConnected &&
-      warnings.push(
-        <Warning
-          key="networkStatusIsConnected"
-          message="No internet connection"
-        />
-      );
-    !connectivityState.network?.isInternetReachable &&
-      warnings.push(
-        <Warning
-          key="networkStatusIsInternetReachable"
-          message="Internet not reachable"
-        />
-      );
-    connectivityState.airplaneMode &&
-      warnings.push(
-        <Warning
-          key="isAirplaneModeEnabled"
-          message="Airplane mode activated"
-        />
-      );
-
-    return warnings;
-  }, [locationState, apiState, connectivityState]);
-
-  const weatherComponent = useMemo(() => {
-    return (
-      <Weather
-        place={locationState.selected?.name}
-        weatherCode={apiState.data?.weather_code}
-        precipitation={apiState.data?.precipitation}
-        temperature={apiState.data?.temperature_2m}
-      />
-    );
-  }, [locationState.selected, apiState.data]);
-
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -167,9 +116,18 @@ export default function App() {
         </View>
       ) : (
         <View style={{ marginTop: 10 }}>
-          {checkWarnings}
+          <Warnings
+            locationState={locationState}
+            apiState={apiState}
+            connectivityState={connectivityState}
+          />
           {apiState.data ? (
-            weatherComponent
+            <Weather
+              place={locationState.selected?.name}
+              weatherCode={apiState.data?.weather_code}
+              precipitation={apiState.data?.precipitation}
+              temperature={apiState.data?.temperature_2m}
+            />
           ) : (
             <Warning message="No data available" />
           )}

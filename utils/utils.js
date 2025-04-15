@@ -20,8 +20,8 @@ export const checkIfLocationEnabled = async () => {
 };
 
 export const getCurrentLocation = async (updateLocationState) => {
-  if (checkIfPermissionGranted()) {
-    updateLocationState({ permissionGranted: true });
+  const permission = await checkIfPermissionGranted();
+  if (permission) {
     const { coords } = await Location.getCurrentPositionAsync();
 
     if (coords) {
@@ -33,7 +33,8 @@ export const getCurrentLocation = async (updateLocationState) => {
         },
       });
     } else alert("Unable to get coordenades!");
-  } else updateLocationState({ permissionGranted: false });
+  }
+  updateLocationState({ permissionGranted: permission });
 };
 
 export const checkNetworkStatus = async () => {

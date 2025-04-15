@@ -96,7 +96,7 @@ export default function App() {
   const checkWarnings = useMemo(() => {
     let warnings = [];
 
-    !locationState.enabled && // Don't know why is not working properly on mobile
+    !locationState.enabled &&
       warnings.push(
         <Warning key="locationEnabled" message="Location not enabled" />
       );
@@ -123,7 +123,7 @@ export default function App() {
           message="Internet not reachable"
         />
       );
-    connectivityState.airplaneMode && // Don't know why is not working properly on mobile
+    connectivityState.airplaneMode &&
       warnings.push(
         <Warning
           key="isAirplaneModeEnabled"

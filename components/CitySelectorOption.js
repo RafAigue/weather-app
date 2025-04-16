@@ -1,5 +1,5 @@
 import { Text, Pressable, StyleSheet } from "react-native";
-import { MapPinIcon } from "react-native-heroicons/outline";
+import { MapIcon } from "react-native-heroicons/outline";
 
 export default function CitySelectorOption({
   city,
@@ -14,8 +14,8 @@ export default function CitySelectorOption({
         setShowCities(false);
       }}
     >
-      <MapPinIcon size={15} style={styles.icon} />
-      <Text style={styles.city}>{city.name}</Text>
+      <MapIcon size={15} style={styles.icon} />
+      <Text color="black">{city.name}</Text>
     </Pressable>
   );
 }
@@ -32,5 +32,4 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   icon: { color: "blue", marginRight: 2 },
-  city: { position: "relative", color: "black" },
 });

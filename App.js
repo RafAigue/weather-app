@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
+import * as Device from "expo-device";
 
 import bg from "./assets/bg.jpg";
 import loading from "./assets/svgs/loading.svg";
@@ -19,6 +20,8 @@ import {
   checkNetworkStatus,
   checkAirplaneMode,
 } from "./utils/utils";
+
+import { DEVICE_CODE_DESKTOP } from "./constants";
 
 export default function App() {
   const [showCities, setShowCities] = useState(false);
@@ -98,41 +101,43 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="light" />
       <Image source={bg} blurRadius={10} style={styles.bg} />
-      <Searcher
-        selectedLocation={locationState.selected}
-        setShowCities={setShowCities}
-        showCities={showCities}
-      />
-      {showCities ? (
-        <CitySelector
-          updateLocationState={updateLocationState}
+      <ScrollView style={styles.scrollFullContent}>
+        <Searcher
+          selectedLocation={locationState.selected}
           setShowCities={setShowCities}
-          getLocation={getLocation}
+          showCities={showCities}
         />
-      ) : null}
-      {apiState.loading ? (
-        <View style={styles.loading}>
-          <Image source={loading} style={{ width: 100, height: 100 }} />
-        </View>
-      ) : (
-        <View style={{ marginTop: 10 }}>
-          <Warnings
-            locationState={locationState}
-            apiState={apiState}
-            connectivityState={connectivityState}
+        {showCities ? (
+          <CitySelector
+            updateLocationState={updateLocationState}
+            setShowCities={setShowCities}
+            getLocation={getLocation}
           />
-          {apiState.data ? (
-            <Weather
-              place={locationState.selected?.name}
-              weatherCode={apiState.data?.weather_code}
-              precipitation={apiState.data?.precipitation}
-              temperature={apiState.data?.temperature_2m}
+        ) : null}
+        {apiState.loading ? (
+          <View style={styles.loading}>
+            <Image source={loading} style={styles.imageLoading} />
+          </View>
+        ) : (
+          <View style={styles.content}>
+            <Warnings
+              locationState={locationState}
+              apiState={apiState}
+              connectivityState={connectivityState}
             />
-          ) : (
-            <Warning message="No data available" />
-          )}
-        </View>
-      )}
+            {apiState.data ? (
+              <Weather
+                place={locationState.selected?.name}
+                weatherCode={apiState.data?.weather_code}
+                precipitation={apiState.data?.precipitation}
+                temperature={apiState.data?.temperature_2m}
+              />
+            ) : (
+              <Warning message="No data available" />
+            )}
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -140,12 +145,17 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: "relative",
   },
   bg: {
     position: "absolute",
     height: "100%",
     width: "100%",
   },
+  scrollFullContent: {
+    width: DEVICE_CODE_DESKTOP === Device.deviceType && "50%",
+    margin: DEVICE_CODE_DESKTOP === Device.deviceType && "auto",
+  },
   loading: { flex: 1, justifyContent: "center", alignItems: "center" },
+  imageLoading: { width: 100, height: 100 },
+  content: { marginTop: 10 },
 });

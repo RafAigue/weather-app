@@ -99,3 +99,9 @@ export const THUNDERSTORM_HAIL_CODES = [99];
 
 export const URL_BASE = "https://api.open-meteo.com/v1/forecast?";
 export const URL_FIELDS = "&current=temperature_2m,weather_code,precipitation";
+
+export const DEVICE_CODE_UNKNOWN = 0;
+export const DEVICE_CODE_PHONE = 1;
+export const DEVICE_CODE_TABLET = 2;
+export const DEVICE_CODE_DESKTOP = 3;
+export const DEVICE_CODE_TV = 4;

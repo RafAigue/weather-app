@@ -22,7 +22,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/mosey.jpg"
+      "favicon": "./src/assets/mosey.jpg"
     },
     "plugins": [
       [

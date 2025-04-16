@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { useMemo } from "react";
 import Warning from "./Warning";
 
@@ -14,6 +14,7 @@ export default function Warnings({
       warnings.push(
         <Warning key="locationEnabled" message="Location not enabled" />
       );
+
     !locationState.permissionGranted &&
       warnings.push(
         <Warning
@@ -21,8 +22,12 @@ export default function Warnings({
           message="Location permission not granted"
         />
       );
+
     apiState.error &&
       warnings.push(<Warning key="fetchingError" message="Fetching error" />);
+
+    !apiState.data && warnings.push(<Warning message="No data available" />);
+
     !connectivityState.network?.isConnected &&
       warnings.push(
         <Warning
@@ -30,6 +35,7 @@ export default function Warnings({
           message="No internet connection"
         />
       );
+
     !connectivityState.network?.isInternetReachable &&
       warnings.push(
         <Warning
@@ -37,6 +43,7 @@ export default function Warnings({
           message="Internet not reachable"
         />
       );
+
     connectivityState.airplaneMode &&
       warnings.push(
         <Warning
@@ -47,19 +54,6 @@ export default function Warnings({
 
     return warnings;
   }, [locationState, apiState, connectivityState]);
+
   return <View>{checkWarnings}</View>;
 }
-
-const styles = StyleSheet.create({
-  view: {
-    display: "flex",
-    flexDirection: "row",
-    width: "auto",
-    margin: "auto",
-    padding: 15,
-    backgroundColor: "#ff691b",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  message: { fontWeight: "bold", textAlign: "center", paddingLeft: 5 },
-});

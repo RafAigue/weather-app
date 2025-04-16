@@ -4,9 +4,9 @@ import { Image, StyleSheet, View } from "react-native";
 import * as Device from "expo-device";
 import bg from "./assets/background.jpg";
 import loading from "./assets/svgs/loading.svg";
-import Warnings from "./components/Warnings";
-import Warning from "./components/Warning";
-import CitySelector from "./components/CitySelector";
+import Warnings from "./components/warning/Warnings";
+import Warning from "./components/warning/Warning";
+import CitySelector from "./components/selector/CitySelector";
 import Weather from "./components/Weather";
 import Searcher from "./components/Searcher";
 import { getWeather } from "./services/weather";
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   fullContent: {
     width: DEVICE_CODE_DESKTOP === Device.deviceType && "50%",
-    margin: "auto",
+    margin: DEVICE_CODE_DESKTOP === Device.deviceType && "auto",
   },
   loading: { flex: 1, justifyContent: "center", alignItems: "center" },
   imageLoading: { width: 100, height: 100 },

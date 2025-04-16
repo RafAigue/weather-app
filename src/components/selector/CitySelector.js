@@ -1,6 +1,6 @@
 import { Text, Pressable, StyleSheet, View } from "react-native";
 import { MapPinIcon } from "react-native-heroicons/outline";
-import { CITIES } from "../constants";
+import { CITIES } from "../../constants";
 import CitySelectorOption from "./CitySelectorOption";
 
 export default function CitySelector({

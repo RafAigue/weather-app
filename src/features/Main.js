@@ -3,7 +3,6 @@ import { Image, StyleSheet, View } from "react-native";
 import * as Device from "expo-device";
 import loading from "../assets/svgs/loading.svg";
 import Warnings from "../components/warning/Warnings";
-import Warning from "../components/warning/Warning";
 import CitySelector from "../components/selector/CitySelector";
 import Weather from "./Weather";
 import Searcher from "./Searcher";
@@ -95,15 +94,13 @@ export default function Main() {
             apiState={apiState}
             connectivityState={connectivityState}
           />
-          {apiState.data ? (
+          {apiState.data && (
             <Weather
               place={locationState.selected?.name}
               weatherCode={apiState.data?.weather_code}
               precipitation={apiState.data?.precipitation}
               temperature={apiState.data?.temperature_2m}
             />
-          ) : (
-            <Warning message="No data available" />
           )}
         </View>
       )}

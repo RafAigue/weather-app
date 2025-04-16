@@ -1,6 +1,6 @@
 import { Text, Pressable, StyleSheet, View } from "react-native";
-import { MapIcon } from "react-native-heroicons/outline";
-import { CITIES } from "../constants";
+import { MapPinIcon } from "react-native-heroicons/outline";
+import { CITIES } from "../../constants";
 import CitySelectorOption from "./CitySelectorOption";
 
 export default function CitySelector({
@@ -17,10 +17,8 @@ export default function CitySelector({
           setShowCities(false);
         }}
       >
-        <MapIcon size={15} style={{ color: "blue", marginRight: 2 }} />
-        <Text style={{ position: "relative", color: "black" }}>
-          My location
-        </Text>
+        <MapPinIcon size={15} style={styles.icon} />
+        <Text color="black">My location</Text>
       </Pressable>
       {CITIES.map((city, index) => (
         <CitySelectorOption
@@ -53,4 +51,5 @@ const styles = StyleSheet.create({
     color: "#000",
     gap: 5,
   },
+  icon: { color: "blue", marginRight: 2 },
 });

@@ -12,7 +12,6 @@ import Searcher from "./components/Searcher";
 import { getWeather } from "./services/weather";
 import {
   checkIfLocationEnabled,
-  getCurrentLocation,
   checkNetworkStatus,
   checkAirplaneMode,
 } from "./utils/utils";
@@ -23,7 +22,8 @@ import { useConnectivity } from "./hooks/useConnectivity";
 
 export default function App() {
   const [showCities, setShowCities] = useState(false);
-  const { locationState, updateLocationState } = useWeather();
+  const { locationState, updateLocationState, getCurrentLocation } =
+    useWeather();
   const { apiState, updateApiState } = useApi();
   const { connectivityState, updateConnectivityState } = useConnectivity();
 

@@ -1,40 +1,19 @@
 import * as Location from "expo-location";
 import * as Network from "expo-network";
 
-// This functions could be implemented with hooks
-export const checkIfPermissionGranted = async () => {
-  let { status } = await Location.requestForegroundPermissionsAsync();
-
-  if (status !== "granted") {
-    console.log("Permission denied. Please, allow the app to use the location");
-    return false;
-  }
-
-  return true;
-};
-
 export const checkIfLocationEnabled = async () => {
   let enabled = await Location.hasServicesEnabledAsync();
   !enabled && console.log("Location not enabled. Please enable your location");
   return enabled;
 };
 
-export const getCurrentLocation = async (updateLocationState) => {
-  const permission = await checkIfPermissionGranted();
-  if (permission) {
-    const { coords } = await Location.getCurrentPositionAsync();
+export const checkIfPermissionGranted = async () => {
+  let { status } = await Location.requestForegroundPermissionsAsync();
 
-    if (coords) {
-      updateLocationState({
-        selected: {
-          name: "My location",
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        },
-      });
-    } else alert("Unable to get coordenades!");
-  }
-  updateLocationState({ permissionGranted: permission });
+  status !== "granted" &&
+    console.log("Permission denied. Please, allow the app to use the location");
+
+  return status === "granted";
 };
 
 export const checkNetworkStatus = async () => {

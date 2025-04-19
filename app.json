@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "weather-app",
+    "name": "Rafael Aineto weather-app",
     "slug": "weather-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,7 +22,7 @@
       }
     },
     "web": {
-      "favicon": "./src/assets/mosey.jpg"
+      "favicon": "./src/assets/gitLogo.png"
     },
     "plugins": [
       [

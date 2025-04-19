@@ -71,29 +71,26 @@ export default function Main() {
 
   return (
     <View style={styles.fullContent}>
-      <Searcher
-        selectedLocation={locationState.selected}
-        setShowCities={setShowCities}
-        showCities={showCities}
-      />
-      {showCities ? (
-        <CitySelector
-          updateLocationState={updateLocationState}
+      <View>
+        <Searcher
+          selectedLocation={locationState.selected}
           setShowCities={setShowCities}
-          getLocation={getLocation}
+          showCities={showCities}
         />
-      ) : null}
+        {showCities ? (
+          <CitySelector
+            updateLocationState={updateLocationState}
+            setShowCities={setShowCities}
+            getLocation={getLocation}
+          />
+        ) : null}
+      </View>
       {apiState.loading ? (
         <View style={styles.loading}>
           <Image source={loading} style={styles.imageLoading} />
         </View>
       ) : (
-        <View style={styles.content}>
-          <Warnings
-            locationState={locationState}
-            apiState={apiState}
-            connectivityState={connectivityState}
-          />
+        <View>
           {apiState.data && (
             <Weather
               place={locationState.selected?.name}
@@ -104,24 +101,22 @@ export default function Main() {
           )}
         </View>
       )}
+      <Warnings
+        locationState={locationState}
+        apiState={apiState}
+        connectivityState={connectivityState}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  bg: {
-    position: "absolute",
-    height: "100%",
-    width: "100%",
-  },
   fullContent: {
-    width: DEVICE_CODE_DESKTOP === Device.deviceType && "50%",
-    margin: DEVICE_CODE_DESKTOP === Device.deviceType && "auto",
+    height: "100%",
+    width: DEVICE_CODE_DESKTOP === Device.deviceType ? "50%" : "100%",
+    minWidth: 400,
+    position: "relative",
   },
   loading: { flex: 1, justifyContent: "center", alignItems: "center" },
   imageLoading: { width: 100, height: 100 },
-  content: { marginTop: 10 },
 });

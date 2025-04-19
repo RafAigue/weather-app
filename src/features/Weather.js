@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import CLOUDY from "../assets/weather pngs/cloudy.png";
 import DRIZZLE from "../assets/weather pngs/drizzle.png";
 import FOG from "../assets/weather pngs/fog.png";
@@ -56,57 +56,66 @@ export default function Weather({
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container}>
-        <View style={styles.cityInfo}>
-          <Text style={styles.city}>{place}</Text>
-          <Text
-            style={{
-              color: "white",
-              fontSize: 22,
-            }}
-          >
-            {temperature}ºC
-          </Text>
-        </View>
-        <View style={{ alignItems: "center" }}>
-          {isWeatherCodeValid() ? (
-            <>
-              {getImageFromCode()}
-              <Text style={styles.conditions}>
-                {WEATHER_CODES[weatherCode]}
-              </Text>
-              <View style={styles.precipitation}>
-                <Image source={precipSVG} style={{ width: 20, height: 20 }} />
-                <Text style={{ color: "white", fontSize: 18 }}>
-                  {precipitation}mm
-                </Text>
-              </View>
-            </>
-          ) : (
-            <>
-              <QuestionMarkCircleIcon size={200} color="white" />
-              <Text style={styles.conditions}>Unknown weather code</Text>
-            </>
-          )}
-        </View>
+    <View style={styles.card}>
+      <View style={styles.cityInfo}>
+        <Text style={styles.city}>{place}</Text>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 22,
+          }}
+        >
+          {temperature}ºC
+        </Text>
       </View>
-    </ScrollView>
+      <View style={{ alignItems: "center" }}>
+        {isWeatherCodeValid() ? (
+          <>
+            {getImageFromCode()}
+            <Text style={styles.conditions}>{WEATHER_CODES[weatherCode]}</Text>
+            <View style={styles.precipitation}>
+              <Image source={precipSVG} style={{ width: 20, height: 20 }} />
+              <Text style={{ color: "white", fontSize: 18 }}>
+                {precipitation}mm
+              </Text>
+            </View>
+          </>
+        ) : (
+          <>
+            <QuestionMarkCircleIcon size={200} color="white" />
+            <Text style={styles.conditions}>Unknown weather code</Text>
+          </>
+        )}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-    width: "100%",
+  card: {
+    width: "90%",
+    minWidth: 400,
+    padding: 20,
+    margin: "auto",
+    marginTop: 30,
+    borderRadius: 20,
+    backgroundColor: "#00000066",
+    borderColor: "#a6f9ff80",
+    borderWidth: 1,
+    backdropFilter: "blur(5px)",
+    shadowColor: "#a6f9ff80",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
   },
   cityInfo: {
     display: "flex",
     flexDirection: "row",
-    width: "350px",
-    marginTop: 10,
-    justifyContent: "space-around",
+    paddingBottom: 10,
+    justifyContent: "space-between",
     alignItems: "baseline",
+    borderBottomWidth: 1,
+    borderBottomColor: "#92929280",
   },
   city: {
     color: "white",
@@ -118,14 +127,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 14,
     fontWeight: "200",
-  },
-  container: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: 20,
-    paddingBottom: 40,
   },
   image: {
     width: 200,

@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useMemo } from "react";
 import Warning from "./Warning";
 
@@ -8,6 +8,7 @@ export default function Warnings({
   connectivityState,
 }) {
   const checkWarnings = useMemo(() => {
+    console.log("checkWarnings");
     let warnings = [];
 
     !locationState.enabled &&
@@ -26,7 +27,10 @@ export default function Warnings({
     apiState.error &&
       warnings.push(<Warning key="fetchingError" message="Fetching error" />);
 
-    !apiState.data && warnings.push(<Warning message="No data available" />);
+    !apiState.data &&
+      warnings.push(
+        <Warning key="noDataAvailable" message="No data available" />
+      );
 
     !connectivityState.network?.isConnected &&
       warnings.push(
@@ -55,5 +59,23 @@ export default function Warnings({
     return warnings;
   }, [locationState, apiState, connectivityState]);
 
-  return <View>{checkWarnings}</View>;
+  return (
+    <>
+      {checkWarnings.length > 0 ? (
+        <View style={styles.content}>{checkWarnings}</View>
+      ) : null}
+    </>
+  );
 }
+
+const styles = StyleSheet.create({
+  content: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    margin: "auto",
+    paddingVertical: 15,
+    backgroundColor: "#00000066",
+    backdropFilter: "blur(5px)",
+  },
+});

@@ -8,7 +8,6 @@ export default function Warnings({
   connectivityState,
 }) {
   const checkWarnings = useMemo(() => {
-    console.log("checkWarnings");
     let warnings = [];
 
     !locationState.enabled &&

@@ -5,7 +5,7 @@ import loading from "../assets/svgs/loading.svg";
 import Warnings from "../components/warning/Warnings";
 import CitySelector from "../components/selector/CitySelector";
 import Weather from "./Weather";
-import Searcher from "./Searcher";
+import Searcher from "../components/Searcher";
 import { getWeather } from "../services/weather";
 import {
   checkIfLocationEnabled,
@@ -71,7 +71,7 @@ export default function Main() {
 
   return (
     <View style={styles.fullContent}>
-      <View>
+      <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
         <Searcher
           selectedLocation={locationState.selected}
           setShowCities={setShowCities}

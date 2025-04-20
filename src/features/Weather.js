@@ -93,7 +93,6 @@ export default function Weather({
 
 const styles = StyleSheet.create({
   card: {
-    width: "90%",
     minWidth: 400,
     padding: 20,
     margin: "auto",

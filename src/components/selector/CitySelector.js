@@ -35,10 +35,11 @@ export default function CitySelector({
 
 const styles = StyleSheet.create({
   component: {
+    width: "100%",
     marginHorizontal: 20,
     marginBottom: 10,
     borderRadius: 10,
-    height: "165px",
+    height: 165,
     overflow: "auto",
   },
   currLocSelector: {
